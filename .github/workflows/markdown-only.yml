@@ -1,0 +1,23 @@
+name: markdown-only
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if any tracked file is not Markdown
+        run: |
+          allowed='^\.github/workflows/.+\.ya?ml$|\.md$'
+          bad=$(git ls-files | grep -v -E "$allowed" || true)
+          if [ -n "$bad" ]; then
+            echo "Non-Markdown files found:"
+            echo "$bad"
+            exit 1
+          fi
